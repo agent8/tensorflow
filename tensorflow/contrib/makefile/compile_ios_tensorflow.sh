@@ -52,14 +52,6 @@ then
 fi
 
 make -j"${JOB_COUNT}" -f tensorflow/contrib/makefile/Makefile \
-TARGET=IOS IOS_ARCH=ARMV7S LIB_NAME=${LIB_PREFIX}-armv7s.a OPTFLAGS="$1"
-if [ $? -ne 0 ]
-then
-  echo "arm7vs compilation failed."
-  exit 1
-fi
-
-make -j"${JOB_COUNT}" -f tensorflow/contrib/makefile/Makefile \
 TARGET=IOS IOS_ARCH=ARM64 LIB_NAME=${LIB_PREFIX}-arm64.a OPTFLAGS="$1"
 if [ $? -ne 0 ]
 then
