@@ -476,17 +476,30 @@ struct ApproximateEqual<CPUDevice, T> {
 // Override on the command-line "--define ANDROID_TYPES=__ANDROID_TYPES_FULL__"
 // to generate a library with full type support with a consequent increase in
 // code size.
-#define REGISTER2(OP, D, N, F, T0, T1) REGISTER(OP, D, N, F, T0)
-#define REGISTER3(OP, D, N, F, T0, T1, T2) REGISTER(OP, D, N, F, T0)
-#define REGISTER4(OP, D, N, F, T0, T1, T2, T3) REGISTER(OP, D, N, F, T0)
-#define REGISTER5(OP, D, N, F, T0, T1, T2, T3, T4) REGISTER(OP, D, N, F, T0)
-#define REGISTER6(OP, D, N, F, T0, T1, T2, T3, T4, T5) REGISTER(OP, D, N, F, T0)
+#define REGISTER2(OP, D, N, F, T0, T1) \
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
+#define REGISTER3(OP, D, N, F, T0, T1, T2) \
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
+#define REGISTER4(OP, D, N, F, T0, T1, T2, T3) \
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
+#define REGISTER5(OP, D, N, F, T0, T1, T2, T3, T4)  \
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
+#define REGISTER6(OP, D, N, F, T0, T1, T2, T3, T4, T5)\
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
 #define REGISTER7(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6) \
-  REGISTER(OP, D, N, F, T0)
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
 #define REGISTER8(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7) \
-  REGISTER(OP, D, N, F, T0)
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
 #define REGISTER9(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7, T8) \
-  REGISTER(OP, D, N, F, T0)
+    REGISTER(OP, D, N, F, T0)   \
+    REGISTER(OP, D, N, F, int32)
 #else  // !defined(__ANDROID_TYPES_SLIM__)
 #define REGISTER2(OP, D, N, F, T0, T1) \
   REGISTER(OP, D, N, F, T0)            \

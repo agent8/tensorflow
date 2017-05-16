@@ -67,6 +67,13 @@ void SwitchOp::Compute(OpKernelContext* context) {
                               .TypeConstraint<type>("T"), \
                           SwitchOp)
 
+REGISTER_KERNEL_BUILDER(Name("Switch")                  \
+                          .Device(DEVICE_CPU)         \
+                          .HostMemory("pred")         \
+                          .TypeConstraint<bool>("T"), \
+                      SwitchOp)
+
+
 TF_CALL_ALL_TYPES(REGISTER_CPU_SWITCH);
 TF_CALL_ALL_TYPES(REGISTER_CPU_REF_SWITCH);
 TF_CALL_QUANTIZED_TYPES(REGISTER_CPU_SWITCH);
@@ -211,6 +218,7 @@ void MergeOp::Compute(OpKernelContext* context) {
 REGISTER_KERNEL_BUILDER(Name("Merge").Device(DEVICE_CPU), MergeOp);
 REGISTER_KERNEL_BUILDER(Name("RefMerge").Device(DEVICE_CPU), MergeOp);
 
+/*
 #define REGISTER_GPU_KERNEL(type)                         \
   REGISTER_KERNEL_BUILDER(Name("Merge")                   \
                               .Device(DEVICE_GPU)         \
@@ -232,6 +240,7 @@ REGISTER_GPU_REF_KERNEL(bool);
 
 #undef REGISTER_GPU_KERNEL
 #undef REGISTER_GPU_REF_KERNEL
+*/
 
 #if TENSORFLOW_USE_SYCL
 #define REGISTER_SYCL_KERNEL(type)                        \
@@ -258,6 +267,7 @@ TF_CALL_NUMBER_TYPES_NO_INT32(REGISTER_SYCL_REF_KERNEL);
 // Special GPU kernels for int32 and string.
 // TODO(b/25387198): Also enable int32 in device memory. This kernel
 // registration requires all int32 inputs and outputs to be in host memory.
+/*
 #define REGISTER_GPU_HOST_KERNEL(type)                    \
   REGISTER_KERNEL_BUILDER(Name("Merge")                   \
                               .Device(DEVICE_GPU)         \
@@ -279,6 +289,7 @@ REGISTER_GPU_HOST_KERNEL(string);
 REGISTER_GPU_HOST_KERNEL(ResourceHandle);
 
 #undef REGISTER_GPU_HOST_KERNEL
+*/
 
 void EnterOp::Compute(OpKernelContext* context) {
   if (IsRefType(context->input_dtype(0))) {
@@ -472,6 +483,7 @@ REGISTER_KERNEL_BUILDER(Name("NextIteration").Device(DEVICE_CPU),
 REGISTER_KERNEL_BUILDER(Name("RefNextIteration").Device(DEVICE_CPU),
                         NextIterationOp);
 
+/*
 #define REGISTER_GPU_KERNEL(type)                                            \
   REGISTER_KERNEL_BUILDER(                                                   \
       Name("NextIteration").Device(DEVICE_GPU).TypeConstraint<type>("T"),    \
@@ -506,6 +518,7 @@ REGISTER_GPU_HOST_KERNEL(int32);
 REGISTER_GPU_HOST_KERNEL(string);
 
 #undef REGISTER_GPU_HOST_KERNEL
+*/
 
 #if TENSORFLOW_USE_SYCL
 #define REGISTER_SYCL_KERNEL(type)  \
