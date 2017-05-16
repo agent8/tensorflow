@@ -281,10 +281,6 @@ ifeq ($(TARGET),ANDROID)
 		CXXFLAGS += -DUSE_HEXAGON_LIBS
 	endif
 
-	ifdef ENABLE_EXPERIMENTAL_HEXNN_OPS
-		CXXFLAGS += -DENABLE_EXPERIMENTAL_HEXNN_OPS
-	endif
-
 endif  # ANDROID
 # LINT.ThenChange(//tensorflow/contrib/android/cmake/CMakeLists.txt)
 
@@ -297,7 +293,7 @@ ifeq ($(TARGET),IOS)
 	IPHONESIMULATOR_SYSROOT := $(shell xcrun --sdk iphonesimulator \
 	--show-sdk-path)
 	IOS_SDK_VERSION := $(shell xcrun --sdk iphoneos --show-sdk-version)
-	MIN_SDK_VERSION := 8.0
+	MIN_SDK_VERSION := 8.2
 # Override IOS_ARCH with ARMV7, ARMV7S, ARM64, or I386.
 	IOS_ARCH := X86_64
 	ifeq ($(IOS_ARCH),ARMV7)
@@ -507,12 +503,11 @@ PBT_OBJS := $(addprefix $(OBJDIR), $(PBT_CC_SRCS:.cc=.o))
 PROTO_CC_SRCS := $(addprefix $(PROTOGENDIR), $(PROTO_SRCS:.proto=.pb.cc))
 PROTO_OBJS := $(addprefix $(OBJDIR), $(PROTO_SRCS:.proto=.pb.o))
 LIB_OBJS := $(PROTO_OBJS) $(TF_CC_OBJS) $(PBT_OBJS)
-BENCHMARK_OBJS := $(addprefix $(OBJDIR), $(BENCHMARK_SRCS:.cc=.o))
 
 .PHONY: clean cleantarget
 
 # The target that's compiled if there's no command-line arguments.
-all: $(LIB_PATH) $(BENCHMARK_NAME)
+all: $(LIB_PATH) 
 
 # Rules for target compilation.
 
@@ -525,12 +520,6 @@ tensorflow/core/util/version_info.cc: .phony_version_info
 $(LIB_PATH): $(LIB_OBJS)
 	@mkdir -p $(dir $@)
 	$(AR) $(ARFLAGS) $(LIB_PATH) $(LIB_OBJS)
-
-$(BENCHMARK_NAME): $(BENCHMARK_OBJS) $(LIB_PATH)
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) \
-	-o $(BENCHMARK_NAME) $(BENCHMARK_OBJS) \
-	$(LIBFLAGS) $(LIB_PATH) $(LDFLAGS) $(LIBS)
 
 # Matches on the normal hand-written TensorFlow C++ source files.
 $(OBJDIR)%.o: %.cc | $(PBT_GEN_FILES)

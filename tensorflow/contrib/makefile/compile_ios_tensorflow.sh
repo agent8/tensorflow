@@ -68,14 +68,6 @@ then
 fi
 
 make -j"${JOB_COUNT}" -f tensorflow/contrib/makefile/Makefile \
-TARGET=IOS IOS_ARCH=I386 LIB_NAME=${LIB_PREFIX}-i386.a OPTFLAGS="$1"
-if [ $? -ne 0 ]
-then
-  echo "i386 compilation failed."
-  exit 1
-fi
-
-make -j"${JOB_COUNT}" -f tensorflow/contrib/makefile/Makefile \
 TARGET=IOS IOS_ARCH=X86_64 LIB_NAME=${LIB_PREFIX}-x86_64.a OPTFLAGS="$1"
 if [ $? -ne 0 ]
 then
@@ -85,9 +77,7 @@ fi
 
 lipo \
 ${LIBDIR}/ios_ARMV7/${LIB_PREFIX}-armv7.a \
-${LIBDIR}/ios_ARMV7S/${LIB_PREFIX}-armv7s.a \
 ${LIBDIR}/ios_ARM64/${LIB_PREFIX}-arm64.a \
-${LIBDIR}/ios_I386/${LIB_PREFIX}-i386.a \
 ${LIBDIR}/ios_X86_64/${LIB_PREFIX}-x86_64.a \
 -create \
 -output ${LIBDIR}/${LIB_PREFIX}.a

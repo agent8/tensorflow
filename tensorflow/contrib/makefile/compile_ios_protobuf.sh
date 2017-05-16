@@ -41,7 +41,7 @@ IPHONEOS_SYSROOT=`xcrun --sdk iphoneos --show-sdk-path`
 IPHONESIMULATOR_PLATFORM=`xcrun --sdk iphonesimulator --show-sdk-platform-path`
 IPHONESIMULATOR_SYSROOT=`xcrun --sdk iphonesimulator --show-sdk-path`
 IOS_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
-MIN_SDK_VERSION=8.0
+MIN_SDK_VERSION=8.2
 
 CFLAGS="-DNDEBUG -Os -pipe -fPIC -fno-exceptions"
 CXXFLAGS="${CFLAGS} -std=c++11 -stdlib=libc++"
@@ -64,36 +64,6 @@ then
   echo "./autogen.sh command failed."
   exit 1
 fi
-
-make distclean
-./configure \
---host=i386-apple-${OSX_VERSION} \
---disable-shared \
---enable-cross-compile \
---with-protoc="${PROTOC_PATH}" \
---prefix=${LIBDIR}/iossim_386 \
---exec-prefix=${LIBDIR}/iossim_386 \
-"CFLAGS=${CFLAGS} \
--mios-simulator-version-min=${MIN_SDK_VERSION} \
--arch i386 \
--fembed-bitcode \
--isysroot ${IPHONESIMULATOR_SYSROOT}" \
-"CXX=${CXX}" \
-"CXXFLAGS=${CXXFLAGS} \
--mios-simulator-version-min=${MIN_SDK_VERSION} \
--arch i386 \
--fembed-bitcode \
--isysroot \
-${IPHONESIMULATOR_SYSROOT}" \
-LDFLAGS="-arch i386 \
--fembed-bitcode \
--mios-simulator-version-min=${MIN_SDK_VERSION} \
-${LDFLAGS} \
--L${IPHONESIMULATOR_SYSROOT}/usr/lib/ \
--L${IPHONESIMULATOR_SYSROOT}/usr/lib/system" \
-"LIBS=${LIBS}"
-make -j"${JOB_COUNT}"
-make install
 
 make distclean
 ./configure \
@@ -125,6 +95,7 @@ ${LDFLAGS} \
 make -j"${JOB_COUNT}"
 make install
 
+
 make distclean
 ./configure \
 --host=armv7-apple-${OSX_VERSION} \
@@ -144,32 +115,6 @@ make distclean
 -fembed-bitcode \
 -isysroot ${IPHONEOS_SYSROOT}" \
 LDFLAGS="-arch armv7 \
--fembed-bitcode \
--miphoneos-version-min=${MIN_SDK_VERSION} \
-${LDFLAGS}" \
-"LIBS=${LIBS}"
-make -j"${JOB_COUNT}"
-make install
-
-make distclean
-./configure \
---host=armv7s-apple-${OSX_VERSION} \
---with-protoc="${PROTOC_PATH}" \
---disable-shared \
---prefix=${LIBDIR}/ios_arm7s \
---exec-prefix=${LIBDIR}/ios_arm7s \
-"CFLAGS=${CFLAGS} \
--miphoneos-version-min=${MIN_SDK_VERSION} \
--arch armv7s \
--fembed-bitcode \
--isysroot ${IPHONEOS_SYSROOT}" \
-"CXX=${CXX}" \
-"CXXFLAGS=${CXXFLAGS} \
--miphoneos-version-min=${MIN_SDK_VERSION} \
--arch armv7s \
--fembed-bitcode \
--isysroot ${IPHONEOS_SYSROOT}" \
-LDFLAGS="-arch armv7s \
 -fembed-bitcode \
 -miphoneos-version-min=${MIN_SDK_VERSION} \
 ${LDFLAGS}" \
@@ -203,19 +148,15 @@ make -j"${JOB_COUNT}"
 make install
 
 lipo \
-${LIBDIR}/iossim_386/lib/libprotobuf.a \
 ${LIBDIR}/iossim_x86_64/lib/libprotobuf.a \
 ${LIBDIR}/ios_arm7/lib/libprotobuf.a \
-${LIBDIR}/ios_arm7s/lib/libprotobuf.a \
 ${LIBDIR}/ios_arm64/lib/libprotobuf.a \
 -create \
 -output ${LIBDIR}/libprotobuf.a
 
 lipo \
-${LIBDIR}/iossim_386/lib/libprotobuf-lite.a \
 ${LIBDIR}/iossim_x86_64/lib/libprotobuf-lite.a \
 ${LIBDIR}/ios_arm7/lib/libprotobuf-lite.a \
-${LIBDIR}/ios_arm7s/lib/libprotobuf-lite.a \
 ${LIBDIR}/ios_arm64/lib/libprotobuf-lite.a \
 -create \
 -output ${LIBDIR}/libprotobuf-lite.a
