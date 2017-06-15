@@ -70,6 +70,10 @@ tensorflow/core/kernels/ops_util.cc
 tensorflow/core/kernels/no_op.cc
 tensorflow/core/kernels/sendrecv_ops.cc
 tensorflow/core/kernels/function_ops.cc
+tensorflow/core/kernels/random_op.cc
+tensorflow/core/kernels/cwise_op_sub.cc
+tensorflow/core/kernels/cwise_op_floor.cc
+tensorflow/core/kernels/cwise_op_div.cc
 tensorflow/core/ops/training_ops.cc
 tensorflow/core/ops/string_ops.cc
 tensorflow/core/ops/state_ops.cc
