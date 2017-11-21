@@ -45,6 +45,8 @@ cp $SCRIPT_DIR/gen/lib/libtensorflow-core.a \
    $FW_DIR_TFCORE/tensorflow_experimental
 cp $SCRIPT_DIR/gen/protobuf_ios/lib/libprotobuf.a \
    $FW_DIR_TFCORE/libprotobuf_experimental.a
+cp $SCRIPT_DIR/gen/nsync_ios/lib/libnsync.a \
+   $FW_DIR_TFCORE/libnsync_experimental.a
 
 echo "Headers, populating: tensorflow (core)"
 cd $SCRIPT_DIR/../../..

@@ -81,7 +81,8 @@ esac
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}/../../.."
 
-nsync_builds_dir=tensorflow/contrib/makefile/downloads/nsync/builds
+makefile_dir=tensorflow/contrib/makefile
+nsync_builds_dir="$makefile_dir/downloads/nsync/builds"
 
 case "$target_platform" in
 ios)            case "$target_arch" in
@@ -103,7 +104,8 @@ platform_libs=
 # Compile nsync.
 for arch in $archs; do
         nsync_platform_dir="$nsync_builds_dir/$arch.$target_platform.c++11"
-
+        nsync_backup_dir="$makefile_dir/gen/nsync"
+        
         # Get Makefile for target.
         case "$target_platform" in
         linux)  makefile='
@@ -127,15 +129,17 @@ for arch in $archs; do
                         include dependfile
                 ';;
 
-        ios)    arch_flags=
+	ios)
+                arch_flags=
+                nsync_backup_dir="$nsync_backup_dir""_$target_platform/$arch"
                 case "$arch" in
                 i386|x86_64)
                         arch_flags="$arch_flags -mios-simulator-version-min=8.0"
-                        arch_flags="$arch_flags -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
+                        arch_flags="$arch_flags -isysroot `xcrun --sdk iphonesimulator --show-sdk-path`"
                         ;;
                 *)
                         arch_flags="$arch_flags -miphoneos-version-min=8.0"
-                        arch_flags="$arch_flags -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
+                        arch_flags="$arch_flags -isysroot `xcrun --sdk iphoneos --show-sdk-path`"
                         ;;
                 esac
                 makefile='
@@ -185,6 +189,7 @@ for arch in $archs; do
                 ';;
 
         android)
+                nsync_backup_dir="$nsync_backup_dir""_$target_platform/$arch"
                 # The Android build uses many different names for the same
                 # platform in different parts of the tree, so things get messy here.
 
@@ -257,6 +262,7 @@ for arch in $archs; do
                 makefile='
                         CC=${CC_PREFIX} \
                            ${NDK_ROOT}/toolchains/'"$toolchain"'/prebuilt/'"$android_os_arch"'/bin/'"$bin_prefix"'-g++
+			RANLIB=${NDK_ROOT}/toolchains/'"$toolchain"'/prebuilt/'"$android_os_arch"'/bin/'"$bin_prefix"'-ranlib
                         PLATFORM_CPPFLAGS=--sysroot \
                                           $(NDK_ROOT)/platforms/android-'"$android_api_version"'/arch-'"$sysroot_arch"' \
                                           -DNSYNC_USE_CPP11_TIMEPOINT -DNSYNC_ATOMIC_CPP11 \
@@ -265,7 +271,7 @@ for arch in $archs; do
                                           -I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/'"$arch"'/include \
                                           -I../../platform/c++11 -I../../platform/gcc \
                                           -I../../platform/posix -pthread
-                        PLATFORM_CFLAGS=-std=c++11 -Wno-narrowing '"$march_option"' -fPIE
+                        PLATFORM_CFLAGS=-std=c++11 -Wno-narrowing '"$march_option"' -fPIE -fPIC
                         PLATFORM_LDFLAGS=-pthread
                         MKDEP=${CC} -M -std=c++11
                         PLATFORM_C=../../platform/c++11/src/nsync_semaphore_mutex.cc \
@@ -290,6 +296,8 @@ for arch in $archs; do
                 touch "$nsync_platform_dir/dependfile"
         fi
         if (cd "$nsync_platform_dir" && make depend nsync.a >&2); then
+                mkdir -p "$nsync_backup_dir"
+                cp "$nsync_platform_dir/nsync.a" "$nsync_backup_dir/libnsync.a"
                 case "$target_platform" in
                 ios)    platform_libs="$platform_libs '$nsync_platform_dir/nsync.a'";;
                 *)      echo "$nsync_platform_dir/nsync.a";;
@@ -301,8 +309,10 @@ done
 
 case "$target_platform" in
 ios)    nsync_platform_dir="$nsync_builds_dir/lipo.$target_platform.c++11"
-        mkdir "$nsync_platform_dir"
+        mkdir -p "$nsync_platform_dir"
         eval lipo $platform_libs -create -output '$nsync_platform_dir/nsync.a'
+        cp "$nsync_platform_dir/nsync.a" "$makefile_dir/gen/nsync_ios/libnsync.a"
         echo "$nsync_platform_dir/nsync.a"
         ;;
 esac
+
